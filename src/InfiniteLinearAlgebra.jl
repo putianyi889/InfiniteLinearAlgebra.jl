@@ -38,6 +38,7 @@ import BlockBandedMatrices: _BlockSkylineMatrix, _BandedMatrix, _BlockSkylineMat
 
 import SemiseparableMatrices: AbstractAlmostBandedLayout, _almostbanded_qr!
 
+import EltypeExtensions: elconvert
 
 if VERSION ≥ v"1.7-"
     LinearAlgebra._cut_B(x::AbstractVector, ::InfUnitRange) = x

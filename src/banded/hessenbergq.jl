@@ -1,11 +1,6 @@
 isorthogonal(::AbstractQ) = true
 isorthogonal(q) = q'q ≈ I
 
-convert_eltype(Q::AbstractMatrix, ::Type{T}) where {T} = convert(AbstractMatrix{T}, Q)
-if !(AbstractQ <: AbstractMatrix)
-    convert_eltype(Q::AbstractQ, ::Type{T}) where {T} = convert(AbstractQ{T}, Q)
-end
-
 """
     QLHessenberg(factors, q)
 
@@ -26,14 +21,14 @@ end
 QLHessenberg(factors::AbstractMatrix{T}, q::AbstractVector{<:Union{AbstractMatrix{T},AbstractQ{T}}}) where {T} =
     QLHessenberg{T,typeof(factors),typeof(q)}(factors, q)
 QLHessenberg{T}(factors::AbstractMatrix, q::AbstractVector) where {T} =
-    QLHessenberg(convert(AbstractMatrix{T}, factors), convert_eltype.(q, T))
+    QLHessenberg(convert(AbstractMatrix{T}, factors), elconvert.(T, q))
 
 # iteration for destructuring into components
 Base.iterate(S::QLHessenberg) = (S.Q, Val(:L))
 Base.iterate(S::QLHessenberg, ::Val{:L}) = (S.L, Val(:done))
 Base.iterate(S::QLHessenberg, ::Val{:done}) = nothing
 
-QLHessenberg{T}(A::QLHessenberg) where {T} = QLHessenberg(convert(AbstractMatrix{T}, A.factors), convert_eltype.(A.q, T))
+QLHessenberg{T}(A::QLHessenberg) where {T} = QLHessenberg(convert(AbstractMatrix{T}, A.factors), elconvert.(T, A.q))
 Factorization{T}(A::QLHessenberg{T}) where {T} = A
 Factorization{T}(A::QLHessenberg) where {T} = QLHessenberg{T}(A)
 AbstractMatrix(F::QLHessenberg) = F.Q * F.L
